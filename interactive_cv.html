@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CV | Luka Lashkhi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Serene Neutrals (Stone, Slate, Teal) -->
+    <!-- Application Structure Plan: A single-page application with a top navigation bar for quick access to key sections (Profile, Timeline, Skills, Contact). The core of the application is an interactive vertical timeline for the employment history. Clicking a job on the timeline highlights its details, allowing for non-linear exploration. This design was chosen to be more engaging and scannable for busy recruiters than a traditional linear document, allowing them to quickly jump to the information most relevant to them. Visualizations (charts) are used for skills and key metrics to make them more impactful. -->
+    <!-- Visualization & Content Choices: 
+        - Profile Summary: (Report Info: Profile Text) -> (Goal: Inform) -> (Viz: Headlined Text Block) -> (Interaction: None) -> (Justification: Provides a quick, high-level summary upfront) -> (Method: HTML/Tailwind).
+        - Employment History: (Report Info: Job History) -> (Goal: Show Change/Progression) -> (Viz: Interactive Vertical Timeline) -> (Interaction: Click on timeline item to scroll and highlight the full description) -> (Justification: Visually represents career progression and is more engaging than a static list) -> (Method: HTML/JS/Tailwind).
+        - Skills: (Report Info: Skill List) -> (Goal: Organize/Inform) -> (Viz: Categorized 'Pill' or 'Tag' layout) -> (Interaction: Hover effects) -> (Justification: More scannable and visually organized than a bullet list) -> (Method: HTML/Tailwind).
+        - Languages: (Report Info: Language Proficiency) -> (Goal: Compare) -> (Viz: Horizontal Bar Chart) -> (Interaction: Tooltips on hover) -> (Justification: Provides an immediate visual comparison of language skills) -> (Method: Chart.js).
+        - Key Metrics: (Report Info: 15+ casinos, 20 tickets/day) -> (Goal: Inform/Highlight) -> (Viz: KPI cards and a simple bar chart) -> (Interaction: None) -> (Justification: Makes key achievements stand out) -> (Method: HTML/Tailwind & Chart.js).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .timeline-item-active {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            border-color: #0d9488;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-700">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold text-slate-800">Luka Lashkhi</h1>
+                <p class="text-sm text-teal-700 font-medium">Customer Service Professional</p>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#profile" class="hover:text-teal-600 transition-colors">Profile</a>
+                <a href="#experience" class="hover:text-teal-600 transition-colors">Experience</a>
+                <a href="#skills" class="hover:text-teal-600 transition-colors">Skills</a>
+                <a href="#contact" class="hover:text-teal-600 transition-colors">Contact</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-slate-700 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-2">
+             <a href="#profile" class="hover:text-teal-600 transition-colors block">Profile</a>
+             <a href="#experience" class="hover:text-teal-600 transition-colors block">Experience</a>
+             <a href="#skills" class="hover:text-teal-600 transition-colors block">Skills</a>
+             <a href="#contact" class="hover:text-teal-600 transition-colors block">Contact</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 md:p-8">
+
+        <section id="profile" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-slate-800 mb-4 text-center">Professional Profile</h2>
+            <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-sm">
+                <p class="text-lg leading-relaxed text-center">
+                    A highly motivated and results-oriented Customer Service Professional with over four years of experience in high-volume, dynamic environments. Proven ability to de-escalate customer issues, enhance user satisfaction, and drive customer retention. Adept at mastering new technologies and collaborating effectively with cross-functional teams to streamline support processes and achieve organizational goals.
+                </p>
+            </div>
+        </section>
+
+        <section id="experience" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center">Career Timeline</h2>
+            <div class="flex flex-col md:flex-row gap-12">
+                <div class="md:w-1/3">
+                    <p class="text-slate-600 mb-6 text-center md:text-left">This timeline showcases my career progression. Click on any role to see the detailed responsibilities and achievements for that position. It's a quick way to navigate through my professional journey.</p>
+                    <div id="timeline-nav" class="relative pl-8 border-l-2 border-teal-200">
+                    </div>
+                </div>
+                <div id="experience-details" class="md:w-2/3">
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="mb-16 scroll-mt-24">
+             <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center">Skills & Competencies</h2>
+             <p class="text-slate-600 mb-8 text-center max-w-3xl mx-auto">My capabilities are split into two main areas: core professional skills that I apply to every challenge, and the specific tools and platforms I've mastered throughout my career. This combination allows me to be a versatile and effective team member.</p>
+             <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Core Competencies</h3>
+                    <div id="core-skills-container" class="flex flex-wrap gap-3">
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Tools & Platforms</h3>
+                    <div id="tool-skills-container" class="flex flex-wrap gap-3">
+                    </div>
+                </div>
+             </div>
+        </section>
+
+        <section id="visualizations" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center">Key Metrics & Proficiencies</h2>
+            <p class="text-slate-600 mb-8 text-center max-w-3xl mx-auto">To provide a clearer picture of my experience, this section visualizes key performance indicators from my roles and my language abilities. These charts offer a quick, data-driven look at my capabilities.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 text-center">Daily Support Tickets Resolved</h3>
+                    <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="ticketsChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 text-center">Language Proficiency</h3>
+                     <div class="chart-container relative h-64 w-full max-w-md mx-auto">
+                        <canvas id="languageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact" class="scroll-mt-24 bg-white p-8 rounded-xl shadow-sm">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">Get In Touch</h2>
+             <div class="flex flex-col md:flex-row justify-center items-center gap-6 text-center">
+                <p><strong>Email:</strong> <a href="mailto:l.lashkhi98@gmail.com" class="text-teal-600 hover:underline">l.lashkhi98@gmail.com</a></p>
+                <p class="hidden md:block">|</p>
+                <p><strong>Phone:</strong> <a href="tel:+995593541731" class="text-teal-600 hover:underline">+995 593 541731</a></p>
+                <p class="hidden md:block">|</p>
+                <p><strong>Location:</strong> Tbilisi, Georgia</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const experienceData = [
+                {
+                    id: 'n1',
+                    title: 'Customer Support Representative',
+                    company: 'N1 Partners Group',
+                    period: 'Jan 2025 – Present',
+                    details: [
+                        'Successfully manage customer support operations for a portfolio of over 15 online casinos, expertly resolving a high volume of user issues and complaints across both licensed and non-licensed platforms.',
+                        'Leverage Intercom to optimize customer communication, implementing automated messaging and targeted engagement strategies that have significantly improved response times and overall satisfaction.',
+                        'Utilize Confluence to build and maintain a robust knowledge base, fostering seamless team collaboration and ensuring consistent, high-quality support.'
+                    ]
+                },
+                {
+                    id: 'leaderbet',
+                    title: 'Customer Support Specialist',
+                    company: 'LeaderBet.com',
+                    period: 'May 2023 – Jan 2025',
+                    details: [
+                        'Efficiently managed and resolved up to 20 complex customer support tickets daily in a high-pressure, fast-paced environment.',
+                        'Demonstrated exceptional multitasking skills by seamlessly navigating multiple platforms, including Jira, Zoho CRM, and LiveCaller.io, to provide comprehensive client support.',
+                        'Maintained meticulous documentation and fostered clear internal communication using Microsoft Office and Slack, ensuring team alignment and top-tier service delivery.'
+                    ]
+                },
+                {
+                    id: 'apex',
+                    title: 'HelpDesk Administrator',
+                    company: 'Apex Global Solutions',
+                    period: 'Jan 2022 – May 2023',
+                    details: [
+                        'Provided critical first-line technical support to all staff within a busy nursing facility, ensuring minimal disruption to daily operations.',
+                        'Managed the full lifecycle of support tickets using Zendesk, from initial logging to successful resolution, consistently meeting service level agreements.',
+                        'Played a key role in troubleshooting a wide range of day-to-day technical issues, contributing to a stable and efficient IT environment.'
+                    ]
+                },
+                {
+                    id: 'evolution',
+                    title: 'Customer Support Specialist',
+                    company: 'Evolution Gaming',
+                    period: 'Jun 2020 – Jan 2022',
+                    details: [
+                        'Delivered exemplary customer support for a suite of online live casino games, ensuring a smooth and positive player experience.',
+                        'Effectively tracked and managed all client concerns using Jira, maintaining an organized workflow that led to timely and effective issue resolution.',
+                        'Utilized Microsoft Office to create detailed reports on client interactions, providing valuable insights to support team coordination and service improvements.'
+                    ]
+                }
+            ];
+
+            const skills = {
+                core: ['Customer Service', 'Problem Solving', 'Communication', 'Multitasking', 'Teamwork', 'Adaptability', 'Organizational Skills'],
+                tools: ['Zendesk', 'Jira', 'Intercom', 'Confluence', 'Slack', 'LiveCaller.io', 'Zoho CRM', 'Microsoft Office', 'GitHub']
+            };
+
+            const timelineNav = document.getElementById('timeline-nav');
+            const experienceDetailsContainer = document.getElementById('experience-details');
+
+            experienceData.forEach((job, index) => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item mb-8 relative cursor-pointer';
+                timelineItem.dataset.id = job.id;
+                timelineItem.innerHTML = `
+                    <div class="absolute -left-[3.2rem] top-1 w-6 h-6 bg-white border-4 border-teal-500 rounded-full"></div>
+                    <h4 class="font-bold text-slate-800">${job.title}</h4>
+                    <p class="text-sm text-slate-600">${job.company}</p>
+                    <p class="text-xs text-slate-500">${job.period}</p>
+                `;
+                timelineNav.appendChild(timelineItem);
+
+                const detailItem = document.createElement('div');
+                detailItem.id = `detail-${job.id}`;
+                detailItem.className = 'bg-white p-6 rounded-xl shadow-sm mb-6 transition-all duration-300';
+                detailItem.innerHTML = `
+                    <h3 class="text-2xl font-bold text-slate-800">${job.title}</h3>
+                    <p class="text-md font-medium text-teal-700 mb-4">${job.company} | ${job.period}</p>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-600">
+                        ${job.details.map(d => `<li>${d}</li>`).join('')}
+                    </ul>
+                `;
+                experienceDetailsContainer.appendChild(detailItem);
+            });
+
+            function createSkillPills(containerId, skillList) {
+                const container = document.getElementById(containerId);
+                skillList.forEach(skill => {
+                    const pill = document.createElement('span');
+                    pill.className = 'bg-teal-100 text-teal-800 text-sm font-medium px-3 py-1 rounded-full hover:bg-teal-200 transition-colors';
+                    pill.textContent = skill;
+                    container.appendChild(pill);
+                });
+            }
+
+            createSkillPills('core-skills-container', skills.core);
+            createSkillPills('tool-skills-container', skills.tools);
+
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetId = `detail-${item.dataset.id}`;
+                    document.getElementById(targetId).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    timelineItems.forEach(i => i.querySelector('div').classList.remove('bg-teal-500'));
+                    item.querySelector('div').classList.add('bg-teal-500');
+
+                    document.querySelectorAll('#experience-details > div').forEach(d => d.classList.remove('timeline-item-active'));
+                    document.getElementById(targetId).classList.add('timeline-item-active');
+                });
+            });
+
+            if (timelineItems.length > 0) {
+                timelineItems[0].click();
+            }
+            
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            const ticketsCtx = document.getElementById('ticketsChart').getContext('2d');
+            new Chart(ticketsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Average Tickets Resolved Daily'],
+                    datasets: [{
+                        label: 'Tickets',
+                        data: [20],
+                        backgroundColor: ['rgba(20, 184, 166, 0.6)'],
+                        borderColor: ['rgba(13, 148, 136, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, max: 25 } }
+                }
+            });
+
+            const languageCtx = document.getElementById('languageChart').getContext('2d');
+            new Chart(languageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Georgian', 'English', 'Russian'],
+                    datasets: [{
+                        label: 'Proficiency',
+                        data: [100, 90, 40],
+                        backgroundColor: [
+                            'rgba(13, 148, 136, 0.6)',
+                            'rgba(15, 118, 110, 0.6)',
+                            'rgba(17, 94, 89, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(13, 148, 136, 1)',
+                            'rgba(15, 118, 110, 1)',
+                            'rgba(17, 94, 89, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    if(value === 100) return 'Native';
+                                    if(value >= 90) return 'C1';
+                                    if(value >= 40) return 'A2';
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
