@@ -3,758 +3,936 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive CV | Luka Lashkhi</title>
+    <title>Luka Lashkhi — CV</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Noto+Sans+Georgian:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        body.lang-ka { font-family: 'Noto Sans Georgian', sans-serif; }
-        .timeline-item-active {
-            transform: scale(1.05);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            border-color: #0d9488; /* teal-600 */
+        :root {
+            --accent: #05E8C0;
+            --accent-dim: #03B494;
+            --bg: #0B0F1A;
+            --surface: #131929;
+            --surface2: #1A2236;
+            --border: rgba(255,255,255,0.07);
+            --text: #E2E8F4;
+            --text-muted: #7A8FAD;
+            --text-faint: #4A5A72;
         }
-        .timeline-item.active .timeline-dot {
-             background-color: #0d9488; /* teal-600 */
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.7;
+            overflow-x: hidden;
         }
-        .fade-in-section {
+        body.lang-ka { font-family: 'Noto Sans Georgian', 'DM Sans', sans-serif; }
+
+        /* Noise grain overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+        }
+
+        h1, h2, h3 { font-family: 'Cormorant Garamond', Georgia, serif; letter-spacing: -0.01em; }
+
+        /* HEADER */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11,15,26,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* NAV LINKS */
+        .nav-link {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+            padding: 4px 0;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0;
+            width: 0; height: 1px;
+            background: var(--accent);
+            transition: width 0.25s ease;
+        }
+        .nav-link:hover { color: var(--accent); }
+        .nav-link:hover::after { width: 100%; }
+
+        /* BUTTONS */
+        .btn-primary {
+            background: var(--accent);
+            color: #0B0F1A;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 9px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: #07FFD4; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(5,232,192,0.25); }
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 9px 16px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* HERO */
+        .hero {
+            padding: 100px 0 80px;
+            position: relative;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 60% at 70% 50%, rgba(5,232,192,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .hero-label::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--accent);
+        }
+        .hero h1 {
+            font-size: clamp(52px, 9vw, 96px);
+            font-weight: 700;
+            line-height: 0.95;
+            color: #fff;
+            margin-bottom: 24px;
+        }
+        .hero h1 em { font-style: italic; color: var(--accent); }
+        .hero-desc {
+            color: var(--text-muted);
+            max-width: 560px;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 36px;
+        }
+        .hero-contacts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        .hero-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+        .hero-contact-item:hover { color: var(--accent); }
+        .hero-contact-item svg { opacity: 0.6; flex-shrink: 0; }
+
+        /* SECTION */
+        section { padding: 80px 0; }
+        .section-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.1;
+            margin-bottom: 48px;
+        }
+
+        /* CARD */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px 32px;
+            transition: all 0.3s;
+        }
+        .card:hover { border-color: rgba(5,232,192,0.25); box-shadow: 0 0 40px rgba(5,232,192,0.05); }
+
+        /* TIMELINE */
+        .timeline-nav-item {
+            padding: 14px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: 1px solid transparent;
+            position: relative;
+            margin-bottom: 4px;
+        }
+        .timeline-nav-item.active, .timeline-nav-item:hover {
+            background: var(--surface2);
+            border-color: var(--border);
+        }
+        .timeline-nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -1px; top: 20%; bottom: 20%;
+            width: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        .timeline-nav-item h4 { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 2px; }
+        .timeline-nav-item p { font-size: 12px; color: var(--text-muted); }
+        .timeline-nav-item .period { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+
+        .exp-detail {
+            display: none;
+            animation: fadeSlide 0.3s ease;
+        }
+        .exp-detail.active { display: block; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .exp-detail h3 { font-size: 28px; color: #fff; margin-bottom: 4px; }
+        .exp-detail .meta { font-size: 13px; color: var(--accent); margin-bottom: 24px; font-weight: 500; }
+        .exp-detail ul { list-style: none; padding: 0; }
+        .exp-detail ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 14px;
+            padding-left: 16px;
+            position: relative;
+        }
+        .exp-detail ul li::before {
+            content: '↳';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            opacity: 0.7;
+            font-size: 12px;
+        }
+        .exp-detail ul li:last-child { border-bottom: none; }
+
+        /* SKILLS */
+        .skill-pill {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.01em;
+        }
+        .skill-pill:hover {
+            background: rgba(5,232,192,0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* ACHIEVEMENT CARDS */
+        .achievement-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(5,232,192,0.05) 0%, transparent 60%);
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transition: opacity 0.3s;
         }
-        .fade-in-section.is-visible {
-            opacity: 1;
-            transform: translateY(0);
+        .achievement-card:hover { border-color: rgba(5,232,192,0.3); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .achievement-card:hover::before { opacity: 1; }
+        .achievement-card .num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--border);
+            line-height: 1;
+            margin-bottom: 12px;
         }
-        #download-btn:active, #download-btn-mobile:active, #lang-toggle:active, #lang-toggle-mobile:active {
-            transform: scale(0.95);
+        .achievement-card h3 { font-size: 18px; color: #fff; margin-bottom: 10px; font-family: 'DM Sans', sans-serif; font-weight: 500; }
+        .achievement-card p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+        /* EDU / LANG */
+        .info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+        }
+        .info-card h3 { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; font-family: 'DM Sans', sans-serif; font-weight: 500; }
+        .info-card .degree { font-size: 22px; color: #fff; margin-bottom: 6px; }
+        .info-card .school { font-size: 14px; color: var(--text-muted); margin-bottom: 4px; }
+        .info-card .period { font-size: 12px; color: var(--text-faint); }
+        .lang-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .lang-item:last-child { border-bottom: none; }
+        .lang-item .name { font-size: 14px; color: var(--text); }
+        .lang-level {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: rgba(5,232,192,0.1);
+            padding: 3px 10px;
+            border-radius: 100px;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            backdrop-filter: blur(8px);
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid rgba(5,232,192,0.2);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 540px;
+            width: 100%;
+            position: relative;
+            animation: modalIn 0.3s ease;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(12px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-faint);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--text); }
+        #modal-title { font-size: 24px; color: #fff; margin-bottom: 16px; }
+        #modal-body { color: var(--text-muted); font-size: 14px; line-height: 1.8; }
+        #modal-body strong { color: var(--text); }
+        #modal-body ul { margin-top: 12px; }
+        #modal-body ul li { padding: 6px 0; border-bottom: 1px solid var(--border); }
+        #modal-body ul li:last-child { border-bottom: none; }
+
+        /* CONTAINER */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+        /* DIVIDER */
+        .divider { height: 1px; background: var(--border); margin: 0; }
+
+        /* MOBILE MENU */
+        #mobile-menu { background: rgba(11,15,26,0.98); border-top: 1px solid var(--border); }
+
+        /* FADE IN */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+
+        @media (max-width: 768px) {
+            section { padding: 56px 0; }
+            .hero { padding: 64px 0 48px; }
         }
     </style>
 </head>
-<body class="bg-stone-50 text-slate-700">
+<body>
 
-    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
-        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold text-slate-800">Luka Lashkhi</h1>
-                <p class="text-sm text-teal-700 font-medium" data-lang-key="jobTitle">Support & Automation Specialist</p>
-            </div>
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="#profile" class="hover:text-teal-600 transition-colors" data-lang-key="navProfile">Profile</a>
-                <a href="#experience" class="hover:text-teal-600 transition-colors" data-lang-key="navExperience">Experience</a>
-                <a href="#skills" class="hover:text-teal-600 transition-colors" data-lang-key="navSkills">Skills</a>
-                <a href="#achievements" class="hover:text-teal-600 transition-colors" data-lang-key="navAchievements">Projects</a>
-                <a href="#education" class="hover:text-teal-600 transition-colors" data-lang-key="navEducation">Education</a>
-                <a href="#contact" class="hover:text-teal-600 transition-colors" data-lang-key="navContact">Contact</a>
-                <button id="download-btn" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-all text-sm font-semibold shadow-sm" data-lang-key="downloadCV">Download CV</button>
-                <button id="lang-toggle" class="bg-slate-200 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-300 transition-all text-sm font-semibold">KA</button>
-            </div>
-            <div class="md:hidden">
-                <button id="menu-btn" class="text-slate-700 focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path></svg>
-                </button>
-            </div>
-        </nav>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-2">
-             <a href="#profile" class="hover:text-teal-600 transition-colors block" data-lang-key="navProfileMobile">Profile</a>
-             <a href="#experience" class="hover:text-teal-600 transition-colors block" data-lang-key="navExperienceMobile">Experience</a>
-             <a href="#skills" class="hover:text-teal-600 transition-colors block" data-lang-key="navSkillsMobile">Skills</a>
-             <a href="#achievements" class="hover:text-teal-600 transition-colors block" data-lang-key="navAchievementsMobile">Projects</a>
-             <a href="#education" class="hover:text-teal-600 transition-colors block" data-lang-key="navEducationMobile">Education</a>
-             <a href="#contact" class="hover:text-teal-600 transition-colors block" data-lang-key="navContactMobile">Contact</a>
-             <button id="download-btn-mobile" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-all text-sm font-semibold shadow-sm mt-2" data-lang-key="downloadCVMobile">Download CV</button>
-             <button id="lang-toggle-mobile" class="bg-slate-200 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-300 transition-all text-sm font-semibold mt-2">KA</button>
+<!-- HEADER -->
+<header class="site-header">
+    <nav class="container" style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;padding-bottom:16px;">
+        <div>
+            <div style="font-size:17px;font-weight:600;color:#fff;font-family:'Cormorant Garamond',serif;letter-spacing:0.01em;">Luka Lashkhi</div>
+            <div style="font-size:11px;color:var(--text-faint);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;" data-lang-key="jobTitle">Support & Automation Specialist</div>
         </div>
-    </header>
-
-    <main class="container mx-auto p-6 md:p-8">
-
-        <section id="profile" class="mb-16 scroll-mt-24 fade-in-section">
-            <h2 class="text-3xl font-bold text-slate-800 mb-4 text-center" data-lang-key="profileTitle">Professional Profile</h2>
-            <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-sm">
-                <p class="text-lg leading-relaxed text-center" data-lang-key="profileText">
-                    Experienced and reliable customer service professional with a proven track record in handling complex customer issues, streamlining support processes, and improving overall satisfaction. Known for being a proactive team player, quick learner, and detail-oriented communicator, with hands-on experience across a wide range of platforms and tools. Ready to contribute meaningfully to any customer-focused team environment.
-                </p>
-            </div>
-        </section>
-
-        <section id="experience" class="mb-16 scroll-mt-24 fade-in-section">
-            <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center" data-lang-key="experienceTitle">Career Timeline</h2>
-            <div class="flex flex-col md:flex-row gap-12">
-                <div class="md:w-1/3">
-                    <p class="text-slate-600 mb-6 text-center md:text-left" data-lang-key="experienceDescription">This timeline showcases my career progression. Click on any role to see the detailed responsibilities and achievements for that position.</p>
-                    <div id="timeline-nav" class="relative pl-8 border-l-2 border-teal-200">
-                        </div>
-                </div>
-                <div id="experience-details" class="md:w-2/3">
-                    </div>
-            </div>
-        </section>
-
-        <section id="skills" class="mb-16 scroll-mt-24 fade-in-section">
-             <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center" data-lang-key="skillsTitle">Skills</h2>
-             <p class="text-slate-600 mb-8 text-center max-w-3xl mx-auto" data-lang-key="skillsDescription">This is an interactive list of my key abilities. Click on any skill to learn more about where and how I've applied it in my professional roles.</p>
-             <div class="grid md:grid-cols-2 gap-8">
-                 <div class="bg-white p-6 rounded-xl shadow-sm">
-                     <h3 class="text-xl font-bold text-slate-800 mb-4" data-lang-key="coreSkillsTitle">Core Competencies</h3>
-                     <div id="core-skills-container" class="flex flex-wrap gap-3">
-                         </div>
-                 </div>
-                 <div class="bg-white p-6 rounded-xl shadow-sm">
-                     <h3 class="text-xl font-bold text-slate-800 mb-4" data-lang-key="toolsSkillsTitle">Tools & Platforms</h3>
-                     <div id="tool-skills-container" class="flex flex-wrap gap-3">
-                         </div>
-                 </div>
-             </div>
-        </section>
-
-        <section id="achievements" class="mb-16 scroll-mt-24 fade-in-section">
-            <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center" data-lang-key="achievementsTitle">Key Projects & Achievements</h2>
-            <p class="text-slate-600 mb-8 text-center max-w-3xl mx-auto" data-lang-key="achievementsDescription">Here are some key projects I've worked on. Click any card to learn more about the context and impact.</p>
-            <div id="achievements-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
-        </section>
-
-        <section id="education" class="mb-16 scroll-mt-24 fade-in-section">
-            <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center" data-lang-key="educationTitle">Education & Languages</h2>
-            <div class="max-w-3xl mx-auto grid md:grid-cols-2 gap-8">
-                <div class="bg-white p-8 rounded-xl shadow-sm text-center">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2" data-lang-key="educationSubTitle">Education</h3>
-                    <p class="font-semibold" data-lang-key="degree">BSc in Computer Science</p>
-                    <p class="text-slate-600" data-lang-key="university">Georgian Technical University</p>
-                    <p class="text-slate-500 text-sm" data-lang-key="gradDate">Sept 2021 - May 2025</p>
-                </div>
-                 <div class="bg-white p-8 rounded-xl shadow-sm text-center">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2" data-lang-key="languagesSubTitle">Languages</h3>
-                    <p><span class="font-semibold" data-lang-key="langGeo">Georgian:</span> <span data-lang-key="langGeoLevel">Native</span></p>
-                    <p><span class="font-semibold" data-lang-key="langEng">English:</span> <span data-lang-key="langEngLevel">C1</span></p>
-                    <p><span class="font-semibold" data-lang-key="langRus">Russian:</span> <span data-lang-key="langRusLevel">Beginner</span></p>
-                </div>
-            </div>
-        </section>
-        
-        <section id="contact" class="scroll-mt-24 bg-white p-8 rounded-xl shadow-sm fade-in-section">
-            <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center" data-lang-key="contactTitle">Get In Touch</h2>
-             <div class="flex flex-col md:flex-row justify-center items-center gap-6 text-center">
-                 <p><strong>Email:</strong> <a href="mailto:l.lashkhi98@gmail.com" class="text-teal-600 hover:underline">l.lashkhi98@gmail.com</a></p>
-                 <p class="hidden md:block">|</p>
-                 <p><strong>Phone:</strong> <a href="tel:+995593541731" class="text-teal-600 hover:underline">+995 593 541731</a></p>
-                 <p class="hidden md:block">|</p>
-                 <p><strong data-lang-key="location">Location:</strong> Tbilisi, Georgia</p>
-            </div>
-        </section>
-
-    </main>
-    
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
-        <div id="modal-content" class="bg-white rounded-xl shadow-2xl p-8 max-w-lg w-full relative transform transition-all scale-95 opacity-0">
-            <button id="modal-close" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800 text-3xl font-bold">&times;</button>
-            <h3 id="modal-title" class="text-2xl font-bold text-slate-800 mb-4"></h3>
-            <div id="modal-body" class="text-slate-600 space-y-4"></div>
+        <div class="hidden-mobile" id="desktop-nav" style="display:flex;align-items:center;gap:28px;">
+            <a href="#profile" class="nav-link" data-lang-key="navProfile">Profile</a>
+            <a href="#experience" class="nav-link" data-lang-key="navExperience">Experience</a>
+            <a href="#skills" class="nav-link" data-lang-key="navSkills">Skills</a>
+            <a href="#achievements" class="nav-link" data-lang-key="navAchievements">Projects</a>
+            <a href="#education" class="nav-link" data-lang-key="navEducation">Education</a>
+            <a href="#contact" class="nav-link" data-lang-key="navContact">Contact</a>
+            <button id="lang-toggle" class="btn-secondary">KA</button>
+            <button id="download-btn" class="btn-primary" data-lang-key="downloadCV">Download CV</button>
+        </div>
+        <button id="menu-btn" style="display:none;background:none;border:none;color:var(--text);cursor:pointer;" aria-label="Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+    </nav>
+    <div id="mobile-menu" style="display:none;padding:16px 24px 20px;">
+        <a href="#profile" class="nav-link" style="display:block;padding:10px 0;" data-lang-key="navProfileMobile">Profile</a>
+        <a href="#experience" class="nav-link" style="display:block;padding:10px 0;" data-lang-key="navExperienceMobile">Experience</a>
+        <a href="#skills" class="nav-link" style="display:block;padding:10px 0;" data-lang-key="navSkillsMobile">Skills</a>
+        <a href="#achievements" class="nav-link" style="display:block;padding:10px 0;" data-lang-key="navAchievementsMobile">Projects</a>
+        <a href="#education" class="nav-link" style="display:block;padding:10px 0;" data-lang-key="navEducationMobile">Education</a>
+        <a href="#contact" class="nav-link" style="display:block;padding:10px 0;" data-lang-key="navContactMobile">Contact</a>
+        <div style="display:flex;gap:12px;margin-top:12px;">
+            <button id="lang-toggle-mobile" class="btn-secondary">KA</button>
+            <button id="download-btn-mobile" class="btn-primary" data-lang-key="downloadCVMobile">Download CV</button>
         </div>
     </div>
+</header>
 
+<main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const { jsPDF } = window.jspdf;
-            let currentLang = 'en';
-            
-            // --- Helper Functions ---
+    <!-- HERO -->
+    <section id="profile" class="hero" style="scroll-margin-top:80px;">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <div class="hero-label reveal" data-lang-key="profileTitle">Professional Profile</div>
+            <h1 class="reveal reveal-delay-1">Luka<br><em>Lashkhi</em></h1>
+            <p class="hero-desc reveal reveal-delay-2" data-lang-key="profileText">
+                Experienced and reliable customer service professional with a proven track record in handling complex customer issues, streamlining support processes, and improving overall satisfaction. Known for being a proactive team player, quick learner, and detail-oriented communicator.
+            </p>
+            <div class="hero-contacts reveal reveal-delay-3">
+                <a href="mailto:l.lashkhi98@gmail.com" class="hero-contact-item">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    l.lashkhi98@gmail.com
+                </a>
+                <a href="tel:+995593541731" class="hero-contact-item">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.58 3.38 2 2 0 0 1 3.55 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.57a16 16 0 0 0 6.29 6.29l.87-.87a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    +995 593 541731
+                </a>
+                <span class="hero-contact-item">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Tbilisi, Georgia
+                </span>
+            </div>
+        </div>
+    </section>
 
-            /**
-             * Parses an HTML string and extracts text content from <p> and <li> tags.
-             * @param {string} htmlString - The HTML string to parse.
-             * @returns {string[]} An array of text content strings.
-             */
-            function parseHtmlDetails(htmlString) {
-                const el = document.createElement('div');
-                el.innerHTML = htmlString;
-                const items = el.querySelectorAll('p, li');
-                if (items.length === 0) {
-                    // Fallback for summaries without p or li tags
-                    const content = el.textContent || el.innerText || '';
-                    return content ? [content] : [];
-                }
-                return Array.from(items)
-                    .map(item => item.textContent || item.innerText || '')
-                    .filter(text => text.trim().length > 0);
+    <div class="divider"></div>
+
+    <!-- EXPERIENCE -->
+    <section id="experience" style="scroll-margin-top:80px;">
+        <div class="container">
+            <div class="section-label reveal" data-lang-key="sectionLabelExp">Career</div>
+            <h2 class="section-title reveal" data-lang-key="experienceTitle">Career Timeline</h2>
+            <p style="color:var(--text-muted);font-size:14px;margin-bottom:48px;margin-top:-32px;" class="reveal" data-lang-key="experienceDescription">Click any role to view full details.</p>
+
+            <div style="display:grid;grid-template-columns:280px 1fr;gap:32px;" id="exp-grid">
+                <!-- Timeline Nav -->
+                <div id="timeline-nav"></div>
+                <!-- Detail -->
+                <div class="card" id="experience-details" style="min-height:320px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SKILLS -->
+    <section id="skills" style="scroll-margin-top:80px;">
+        <div class="container">
+            <div class="section-label reveal" data-lang-key="sectionLabelSkills">Expertise</div>
+            <h2 class="section-title reveal" data-lang-key="skillsTitle">Skills</h2>
+            <p style="color:var(--text-muted);font-size:14px;margin-bottom:48px;margin-top:-32px;" class="reveal" data-lang-key="skillsDescription">Click any skill to see where I've applied it.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;" id="skills-grid">
+                <div class="info-card reveal">
+                    <h3 data-lang-key="coreSkillsTitle">Core Competencies</h3>
+                    <div id="core-skills-container" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                </div>
+                <div class="info-card reveal reveal-delay-1">
+                    <h3 data-lang-key="toolsSkillsTitle">Tools & Platforms</h3>
+                    <div id="tool-skills-container" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ACHIEVEMENTS -->
+    <section id="achievements" style="scroll-margin-top:80px;">
+        <div class="container">
+            <div class="section-label reveal" data-lang-key="sectionLabelAch">Impact</div>
+            <h2 class="section-title reveal" data-lang-key="achievementsTitle">Key Projects</h2>
+            <p style="color:var(--text-muted);font-size:14px;margin-bottom:48px;margin-top:-32px;" class="reveal" data-lang-key="achievementsDescription">Click a card to learn more about the context and results.</p>
+            <div id="achievements-container" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;"></div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- EDUCATION -->
+    <section id="education" style="scroll-margin-top:80px;">
+        <div class="container">
+            <div class="section-label reveal" data-lang-key="sectionLabelEdu">Background</div>
+            <h2 class="section-title reveal" data-lang-key="educationTitle">Education & Languages</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:720px;" id="edu-grid">
+                <div class="info-card reveal">
+                    <h3 data-lang-key="educationSubTitle">Education</h3>
+                    <div class="degree" data-lang-key="degree">BSc in Computer Science</div>
+                    <div class="school" data-lang-key="university">Georgian Technical University</div>
+                    <div class="period" data-lang-key="gradDate">Sept 2021 – May 2025</div>
+                </div>
+                <div class="info-card reveal reveal-delay-1">
+                    <h3 data-lang-key="languagesSubTitle">Languages</h3>
+                    <div class="lang-item">
+                        <span class="name" data-lang-key="langGeo">Georgian</span>
+                        <span class="lang-level" data-lang-key="langGeoLevel">Native</span>
+                    </div>
+                    <div class="lang-item">
+                        <span class="name" data-lang-key="langEng">English</span>
+                        <span class="lang-level" data-lang-key="langEngLevel">C1</span>
+                    </div>
+                    <div class="lang-item">
+                        <span class="name" data-lang-key="langRus">Russian</span>
+                        <span class="lang-level" data-lang-key="langRusLevel">Beginner</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CONTACT -->
+    <section id="contact" style="scroll-margin-top:80px;padding-bottom:100px;">
+        <div class="container" style="text-align:center;">
+            <div class="section-label reveal" style="justify-content:center;" data-lang-key="sectionLabelContact">Contact</div>
+            <h2 class="section-title reveal" style="margin-bottom:16px;" data-lang-key="contactTitle">Get In Touch</h2>
+            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:32px;margin-top:32px;" class="reveal">
+                <a href="mailto:l.lashkhi98@gmail.com" class="hero-contact-item" style="font-size:15px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    l.lashkhi98@gmail.com
+                </a>
+                <a href="tel:+995593541731" class="hero-contact-item" style="font-size:15px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.58 3.38 2 2 0 0 1 3.55 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.57a16 16 0 0 0 6.29 6.29l.87-.87a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    +995 593 541731
+                </a>
+                <span class="hero-contact-item" style="font-size:15px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Tbilisi, Georgia
+                </span>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-box">
+        <button class="modal-close" id="modal-close">×</button>
+        <h3 id="modal-title"></h3>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<style>
+@media(max-width:768px){
+    #desktop-nav{display:none!important;}
+    #menu-btn{display:block!important;}
+    #exp-grid{grid-template-columns:1fr!important;}
+    #skills-grid{grid-template-columns:1fr!important;}
+    #achievements-container{grid-template-columns:1fr!important;}
+    #edu-grid{grid-template-columns:1fr!important;}
+    .hero h1{font-size:48px!important;}
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const { jsPDF } = window.jspdf;
+    let currentLang = 'en';
+
+    function parseHtmlDetails(htmlString) {
+        const el = document.createElement('div');
+        el.innerHTML = htmlString;
+        const items = el.querySelectorAll('p, li');
+        if (items.length === 0) {
+            const c = el.textContent || '';
+            return c ? [c] : [];
+        }
+        return Array.from(items).map(i => i.textContent || '').filter(t => t.trim().length > 0);
+    }
+
+    function findSkillsInText(text, skillsList) {
+        const found = new Set();
+        const lower = ` ${text.toLowerCase()} `;
+        for (const skill of skillsList) {
+            const lowerSkill = skill.toLowerCase();
+            let kw = lowerSkill.split(' ')[0].split('(')[0].replace(/[^a-z0-9]/g, '');
+            if (kw === 'microsoft') kw = 'microsoft office';
+            if (lower.includes(` ${kw} `) || lower.includes(` ${lowerSkill} `)) found.add(skill);
+        }
+        return Array.from(found);
+    }
+
+    // ===================== DATA =====================
+
+    const translations = {
+        en: {
+            jobTitle: 'Support & Automation Specialist',
+            navProfile:'Profile', navExperience:'Experience', navSkills:'Skills', navAchievements:'Projects', navEducation:'Education', navContact:'Contact',
+            navProfileMobile:'Profile', navExperienceMobile:'Experience', navSkillsMobile:'Skills', navAchievementsMobile:'Projects', navEducationMobile:'Education', navContactMobile:'Contact',
+            downloadCV:'Download CV', downloadCVMobile:'Download CV',
+            profileTitle:'Professional Profile',
+            profileText:'Experienced and reliable customer service professional with a proven track record in handling complex customer issues, streamlining support processes, and improving overall satisfaction. Known for being a proactive team player, quick learner, and detail-oriented communicator, with hands-on experience across a wide range of platforms and tools. Ready to contribute meaningfully to any customer-focused team environment.',
+            experienceTitle:'Career Timeline',
+            experienceDescription:'Click on any role to see the detailed responsibilities and achievements for that position.',
+            sectionLabelExp:'Career', sectionLabelSkills:'Expertise', sectionLabelAch:'Impact', sectionLabelEdu:'Background', sectionLabelContact:'Contact',
+            skillsTitle:'Skills',
+            skillsDescription:"Click on any skill to learn more about where and how I've applied it in my professional roles.",
+            coreSkillsTitle:'Core Competencies', toolsSkillsTitle:'Tools & Platforms',
+            achievementsTitle:'Key Projects',
+            achievementsDescription:"Click any card to learn more about the context and impact.",
+            educationTitle:'Education & Languages', educationSubTitle:'Education',
+            degree:'BSc in Computer Science', university:'Georgian Technical University', gradDate:'Sept 2021 – May 2025',
+            languagesSubTitle:'Languages',
+            langGeo:'Georgian', langGeoLevel:'Native',
+            langEng:'English', langEngLevel:'C1',
+            langRus:'Russian', langRusLevel:'Beginner',
+            contactTitle:'Get In Touch', location:'Location',
+            skillModalTitle:'Skill: ',
+            skillModalBody:'This skill was applied and honed during my time at: ',
+            skillModalBodyDefault:"This is a foundational skill I've developed and applied across various professional contexts.",
+            experienceData:[
+                {id:'kee5ul47y079tf9is0skenyu', title:'Zendesk Automation & AI Sen. Specialist', company:'VirtusPro LLC', period:'October 2025 – Present',
+                 detailsHtml:"<p>Develop, configure, and maintain Zendesk automations, triggers, and macros to streamline support operations.</p><p>Integrate AI-powered tools and third-party systems to enhance the customer experience and reduce manual workload.</p><p>Work with Monday.com (SRM) for project tracking, task coordination, and cross-departmental collaboration.</p><p>Monitor and analyze customer queries to identify trends, improve ticket routing, and enhance support efficiency.</p><p>Oversee and maintain website backend performance, ensuring data integrity and smooth integration with CRM systems.</p><p>Continuously research and implement new tools and workflows to improve operational efficiency and user experience.</p>", skills:[]},
+                {id:'qc6dpbwwh6xos4g23hoz741s', title:'QA & CRM Specialist | iGaming Operations', company:'N1 Partners Group', period:'January 2025 – October 2025',
+                 detailsHtml:"<ul><li>Supervised the Customer Support team for the non-licensed Costa Rica group of online casinos.</li><li>Provided escalation support for complex player issues with high-level resolutions.</li><li>Utilized CRM systems (Intercom, Zendesk) to streamline communication workflows.</li><li>Maintained internal documentation in Confluence, promoting knowledge sharing.</li><li>Collaborated with development and product teams to bridge support and engineering.</li><li>Ensured the quality and stability of iGaming software through manual and automated testing.</li><li>Designed and executed test cases for web and backend systems using Postman.</li><li>Logged, tracked, and verified issues in Jira across versions.</li><li>Conducted data integrity validation using SQL queries.</li></ul>", skills:[]},
+                {id:'gzk9zj7yt6t2bsfl30ffiw0d', title:'Customer Service Specialist', company:'We Are Leaderbet', period:'May 2023 – January 2025',
+                 detailsHtml:"<p>Resolved up to 50 daily customer support tickets efficiently in a high-pressure environment.</p><p>Skilled at multitasking across Jira, Zoho CRM, LiveCaller.io, Zoho People, and Slack.</p><p>Maintained clear, professional communication and detailed documentation using Microsoft Office tools.</p>", skills:[]},
+                {id:'mesyjs2w79cqjl0iy2g7kw38', title:'Help Desk Administrator', company:'Apex Global Solutions', period:'January 2022 – May 2023',
+                 detailsHtml:"<p>Provided technical support to staff in a nursing facility as a Helpdesk Administrator.</p><p>Managed and resolved support tickets using Zendesk.</p><p>Assisted in troubleshooting day-to-day technical issues to ensure smooth operations.</p><p>Facilitated internal communication through Slack.</p><p>Utilized Microsoft Office tools for documentation and reporting.</p>", skills:[]},
+                {id:'ns0fof6fws9r2g7j06j9izfw', title:'Customer Service Specialist', company:'Evolution', period:'January 2020 – January 2022',
+                 detailsHtml:"<p>Delivered high-quality customer support for online live casino games, ensuring smooth player experiences.</p><p>Managed and tracked client concerns using Jira with efficient ticket workflow.</p><p>Used Microsoft Office tools to prepare reports and document client interactions.</p>", skills:[]}
+            ],
+            skills:{
+                core:['Communication & Interpersonal Skills','Multitasking & Time Management','Team Collaboration & Adaptability','Organizational & Documentation Skills','iGaming Operations','Customer Support Optimization','Workflow Optimization'],
+                tools:['Zendesk','Zoho','Monday','Confluence','Jira','Python','SQL','NoSQL','Git','GitHub','Amazon Web Services (AWS)','API Development','REST APIs','Slack','Microsoft Products']
+            },
+            achievementDetails:{
+                'au20p518khllobpf90vwwpjp':{title:'Zendesk Automation & AI Integration', body:"<p>Led the design and implementation of advanced <strong>Zendesk automation workflows</strong>, custom <strong>triggers</strong>, and <strong>AI-driven chat solutions</strong> to enhance ticket handling efficiency. Integrated AI-powered response systems and dynamic macros, resulting in a <strong>25% reduction in average response time</strong> and improved <strong>CSAT scores</strong> across customer channels.</p>"},
+                'qgxsdn5ulrhptrj0oovu3yno':{title:'iGaming QA Process Optimization', body:"<p>Spearheaded quality assurance efforts for web-based iGaming platforms, executing <strong>manual, regression, and API testing</strong> via <strong>Postman</strong>. Collaborated closely with development teams to identify and resolve high-impact defects, using <strong>Jira</strong> for bug tracking and <strong>SQL</strong> for data verification. Achieved a <strong>notable increase in platform stability</strong> and reduced bug recurrence across releases.</p>"},
+                'dei2gmfhifrp0gycjirs942o':{title:'CRM Workflow Enhancement', body:"<p>Developed and integrated new CRM features using <strong>Intercom</strong> and backend API connections to centralize player communication and automate feedback loops. Improved <strong>data visibility</strong> and <strong>response tracking</strong>, enabling the support team to handle inquiries <strong>30% faster</strong> while maintaining consistent service quality.</p>"}
             }
-
-            /**
-             * Finds which skills from a list are mentioned in a text.
-             * @param {string} text - The text to search within.
-             * @param {string[]} skillsList - An array of skill names.
-             * @returns {string[]} A unique array of skills found in the text.
-             */
-            function findSkillsInText(text, skillsList) {
-                const foundSkills = new Set();
-                const lowerText = ` ${text.toLowerCase()} `; // Add spacing for boundary matching
-                
-                for (const skill of skillsList) {
-                    const lowerSkill = skill.toLowerCase();
-                    // Create a regex-safe keyword, often the first word
-                    let keyword = lowerSkill.split(' ')[0].split('(')[0].replace(/[^a-z0-9]/g, '');
-                    
-                    if (keyword === 'microsoft') keyword = 'microsoft office'; // Special case
-                    if (keyword === 'api') keyword = 'api'; // Special case
-                    if (keyword === 'aws') keyword = 'aws'; // Special case
-                    
-                    if (lowerText.includes(` ${keyword} `) || lowerText.includes(` ${lowerSkill} `)) {
-                        foundSkills.add(skill);
-                    }
-                }
-                return Array.from(foundSkills);
+        },
+        ka: {
+            jobTitle:'მხარდაჭერისა და ავტომატიზაციის სპეციალისტი',
+            navProfile:'პროფილი', navExperience:'გამოცდილება', navSkills:'უნარები', navAchievements:'პროექტები', navEducation:'განათლება', navContact:'კონტაქტი',
+            navProfileMobile:'პროფილი', navExperienceMobile:'გამოცდილება', navSkillsMobile:'უნარები', navAchievementsMobile:'პროექტები', navEducationMobile:'განათლება', navContactMobile:'კონტაქტი',
+            downloadCV:'CV-ის გადმოწერა', downloadCVMobile:'CV-ის გადმოწერა',
+            profileTitle:'პროფესიული პროფილი',
+            profileText:'გამოცდილი და საიმედო მომხმარებელთა მომსახურების პროფესიონალი, დამტკიცებული გამოცდილებით რთული სამომხმარებლო საკითხების გადაჭრაში, მხარდაჭერის პროცესების გამარტივებასა და საერთო კმაყოფილების გაუმჯობესებაში.',
+            experienceTitle:'კარიერული ქრონოლოგია',
+            experienceDescription:'დააჭირეთ ნებისმიერ პოზიციას, რათა იხილოთ დეტალური პასუხისმგებლობები.',
+            sectionLabelExp:'კარიერა', sectionLabelSkills:'ექსპერტიზა', sectionLabelAch:'გავლენა', sectionLabelEdu:'ფონი', sectionLabelContact:'კონტაქტი',
+            skillsTitle:'უნარები',
+            skillsDescription:'დააჭირეთ ნებისმიერ უნარს, რათა გაიგოთ მეტი.',
+            coreSkillsTitle:'ძირითადი კომპეტენციები', toolsSkillsTitle:'ინსტრუმენტები და პლატფორმები',
+            achievementsTitle:'ძირითადი პროექტები',
+            achievementsDescription:'დააჭირეთ ნებისმიერ ბარათს, რათა გაიგოთ მეტი.',
+            educationTitle:'განათლება და ენები', educationSubTitle:'განათლება',
+            degree:'კომპიუტერულ მეცნიერებათა ბაკალავრი', university:'საქართველოს ტექნიკური უნივერსიტეტი', gradDate:'სექტემბერი 2021 – მაისი 2025',
+            languagesSubTitle:'ენები',
+            langGeo:'ქართული', langGeoLevel:'მშობლიური',
+            langEng:'ინგლისური', langEngLevel:'C1',
+            langRus:'რუსული', langRusLevel:'დამწყები',
+            contactTitle:'დამიკავშირდით', location:'მდებარეობა',
+            skillModalTitle:'უნარი: ',
+            skillModalBody:'ეს უნარი გამოვიყენე შემდეგ კომპანიებში: ',
+            skillModalBodyDefault:'ეს არის ფუნდამენტური უნარი, რომელიც განვავითარე სხვადასხვა პროფესიულ კონტექსტში.',
+            experienceData:[
+                {id:'kee5ul47y079tf9is0skenyu', title:'Zendesk ავტომატიზაციისა და AI უფროსი სპეციალისტი', company:'VirtusPro LLC', period:'ოქტომბერი 2025 – დღემდე',
+                 detailsHtml:"<p>Zendesk-ის ავტომატიზაციების, ტრიგერებისა და მაკროების შემუშავება, კონფიგურაცია და შენარჩუნება.</p><p>AI-ზე მომუშავე ინსტრუმენტებისა და სისტემების ინტეგრირება მომხმარებელთა გამოცდილების გასაუმჯობესებლად.</p><p>Monday.com-თან მუშაობა პროექტების კოორდინაციისთვის.</p><p>მომხმარებელთა მოთხოვნების მონიტორინგი და ანალიზი.</p><p>ვებსაიტის ბექენდის მუშაობის ზედამხედველობა და CRM ინტეგრაცია.</p>", skills:[]},
+                {id:'qc6dpbwwh6xos4g23hoz741s', title:'ხარისხის უზრუნველყოფისა და CRM სპეციალისტი', company:'N1 Partners Group', period:'იანვარი 2025 – ოქტომბერი 2025',
+                 detailsHtml:"<ul><li>მომხმარებელთა მხარდაჭერის გუნდის ზედამხედველობა.</li><li>ესკალაციის მხარდაჭერა რთული საკითხებისთვის.</li><li>CRM სისტემების (Intercom, Zendesk) გამოყენება.</li><li>Confluence-ში შიდა დოკუმენტაციის შენარჩუნება.</li><li>iGaming პროგრამული უზრუნველყოფის ტესტირება.</li><li>Postman-ის გამოყენებით API ტესტირების ჩატარება.</li><li>Jira-ში ხარვეზების მართვა.</li><li>SQL მოთხოვნებით მონაცემთა ვალიდაცია.</li></ul>", skills:[]},
+                {id:'gzk9zj7yt6t2bsfl30ffiw0d', title:'მომხმარებელთა მომსახურების სპეციალისტი', company:'We Are Leaderbet', period:'მაისი 2023 – იანვარი 2025',
+                 detailsHtml:"<p>დღეში 50-მდე მომხმარებელთა ბილეთის გადაჭრა.</p><p>Jira, Zoho CRM, LiveCaller.io, Slack-ზე მუშაობა.</p><p>Microsoft Office-ის ინსტრუმენტებით დოკუმენტაციის შენარჩუნება.</p>", skills:[]},
+                {id:'mesyjs2w79cqjl0iy2g7kw38', title:'Help Desk ადმინისტრატორი', company:'Apex Global Solutions', period:'იანვარი 2022 – მაისი 2023',
+                 detailsHtml:"<p>ტექნიკური დახმარების გაწევა საექთნო დაწესებულების თანამშრომლებისთვის.</p><p>Zendesk-ის გამოყენებით ბილეთების მართვა.</p><p>Slack-ის საშუალებით შიდა კომუნიკაცია.</p><p>Microsoft Office-ის ინსტრუმენტების გამოყენება.</p>", skills:[]},
+                {id:'ns0fof6fws9r2g7j06j9izfw', title:'მომხმარებელთა მომსახურების სპეციალისტი', company:'Evolution', period:'იანვარი 2020 – იანვარი 2022',
+                 detailsHtml:"<p>მაღალი ხარისხის მომხმარებელთა მხარდაჭერა ონლაინ კაზინოს თამაშებისთვის.</p><p>კლიენტთა საკითხების მართვა Jira-ს გამოყენებით.</p><p>Microsoft Office-ის ინსტრუმენტებით ანგარიშების მომზადება.</p>", skills:[]}
+            ],
+            skills:{
+                core:['კომუნიკაციისა და ინტერპერსონალური უნარები','მრავალფუნქციურობა და დროის მართვა','გუნდური თანამშრომლობა და ადაპტაცია','ორგანიზაციული და დოკუმენტაციის უნარები','iGaming ოპერაციები','მომხმარებელთა მხარდაჭერის ოპტიმიზაცია','სამუშაო პროცესის ოპტიმიზაცია'],
+                tools:['Zendesk','Zoho','Monday','Confluence','Jira','Python','SQL','NoSQL','Git','GitHub','Amazon Web Services (AWS)','API Development','REST APIs','Slack','Microsoft-ის პროდუქტები']
+            },
+            achievementDetails:{
+                'au20p518khllobpf90vwwpjp':{title:'Zendesk ავტომატიზაცია და AI ინტეგრაცია', body:"<p>ხელმძღვანელობდა <strong>Zendesk ავტომატიზაციის</strong> სამუშაო პროცესების, <strong>AI-ზე დაფუძნებული ჩატის გადაწყვეტილებების</strong> დიზაინსა და დანერგვას. შედეგად <strong>25%-ით შემცირდა საშუალო რეაგირების დრო</strong> და გაუმჯობესდა <strong>CSAT ქულები</strong>.</p>"},
+                'qgxsdn5ulrhptrj0oovu3yno':{title:'iGaming QA პროცესის ოპტიმიზაცია', body:"<p>ხელმძღვანელობდა ხარისხის უზრუნველყოფის სამუშაოებს iGaming პლატფორმებისთვის <strong>Postman</strong>-ის, <strong>Jira</strong>-სა და <strong>SQL</strong>-ის გამოყენებით. მიაღწია <strong>პლატფორმის სტაბილურობის თვალსაჩინო ზრდას</strong>.</p>"},
+                'dei2gmfhifrp0gycjirs942o':{title:'CRM სამუშაო პროცესის გაუმჯობესება', body:"<p>შეიმუშავა CRM ფუნქციები <strong>Intercom</strong>-ისა და API კავშირების გამოყენებით. გუნდმა <strong>30%-ით უფრო სწრაფად</strong> დაამუშავა მოთხოვნები.</p>"}
             }
+        }
+    };
 
-            // --- Data Store ---
-
-            const translations = {
-                en: {
-                    jobTitle: 'Support & Automation Specialist',
-                    navProfile: 'Profile', navExperience: 'Experience', navSkills: 'Skills', navAchievements: 'Projects', navEducation: 'Education', navContact: 'Contact',
-                    navProfileMobile: 'Profile', navExperienceMobile: 'Experience', navSkillsMobile: 'Skills', navAchievementsMobile: 'Projects', navEducationMobile: 'Education', navContactMobile: 'Contact',
-                    downloadCV: 'Download CV',
-                    downloadCVMobile: 'Download CV',
-                    profileTitle: 'Professional Profile',
-                    profileText: 'Experienced and reliable customer service professional with a proven track record in handling complex customer issues, streamlining support processes, and improving overall satisfaction. Known for being a proactive team player, quick learner, and detail-oriented communicator, with hands-on experience across a wide range of platforms and tools. Ready to contribute meaningfully to any customer-focused team environment.',
-                    experienceTitle: 'Career Timeline',
-                    experienceDescription: 'This timeline showcases my career progression. Click on any role to see the detailed responsibilities and achievements for that position.',
-                    skillsTitle: 'Skills',
-                    skillsDescription: "This is an interactive list of my key abilities. Click on any skill to learn more about where and how I've applied it in my professional roles.",
-                    coreSkillsTitle: 'Core Competencies',
-                    toolsSkillsTitle: 'Tools & Platforms',
-                    achievementsTitle: 'Key Projects & Achievements',
-                    achievementsDescription: "Here are some key projects I've worked on. Click any card to learn more about the context and impact.",
-                    educationTitle: 'Education & Languages',
-                    educationSubTitle: 'Education',
-                    degree: 'BSc in Computer Science',
-                    university: 'Georgian Technical University',
-                    gradDate: 'Sept 2021 - May 2025',
-                    languagesSubTitle: 'Languages',
-                    langGeo: 'Georgian:', langGeoLevel: 'Native',
-                    langEng: 'English:', langEngLevel: 'C1',
-                    langRus: 'Russian:', langRusLevel: 'Beginner',
-                    contactTitle: 'Get In Touch',
-                    location: 'Location:',
-                    skillModalTitle: 'Skill: ',
-                    skillModalBody: "This skill was applied and honed during my time at: ",
-                    skillModalBodyDefault: "This is a foundational skill I've developed and applied across various professional contexts.",
-                    
-                    // --- DYNAMIC DATA FROM JSON ---
-                    experienceData: [
-                        { 
-                            id: 'kee5ul47y079tf9is0skenyu', 
-                            title: 'Zendesk Automation & AI Sen. Specialist', 
-                            company: 'VirtusPro LLC', 
-                            period: 'October 2025 - Present', 
-                            detailsHtml: "<p>Develop, configure, and maintain Zendesk automations, triggers, and macros to streamline support operations.</p><p>Integrate AI-powered tools and third-party systems to enhance the customer experience and reduce manual workload.</p><p>Work with <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://Monday.com\">Monday.com</a> (SRM) for project tracking, task coordination, and cross-departmental collaboration.</p><p>Monitor and analyze customer queries to identify trends, improve ticket routing, and enhance support efficiency.</p><p>Oversee and maintain website backend performance, ensuring data integrity and smooth integration with CRM systems.</p><p>Continuously research and implement new tools and workflows to improve operational efficiency and user experience.</p>",
-                            skills: [] // Skills will be populated dynamically
-                        },
-                        { 
-                            id: 'qc6dpbwwh6xos4g23hoz741s', 
-                            title: 'Quality assurance and CRM specialist | iGaming Operations', 
-                            company: 'N1 Partners Group', 
-                            period: 'January 2025 - October 2025', 
-                            detailsHtml: "<ul><li><p>Supervised and supported the <strong>Customer Support team</strong> for the non-licensed Costa Rica group of online casinos, ensuring smooth daily operations and consistent service quality.</p></li><li><p>Provided <strong>escalation support</strong> for complex player issues, ensuring timely and high-level resolutions in compliance with company policies.</p></li><li><p>Utilized <strong>CRM systems (Intercom, Zendesk)</strong> to streamline communication workflows, reduce response times, and improve customer satisfaction scores.</p></li><li><p>Maintained and updated <strong>internal documentation</strong> in <strong>Confluence</strong>, promoting knowledge sharing and standardized support procedures.</p></li><li><p>Collaborated with development and product teams to bridge communication between <strong>support and engineering</strong>, ensuring accurate issue reporting and quick resolutions.</p></li><li><p>Ensured the <strong>quality and stability</strong> of iGaming software through <strong>manual and automated testing</strong>, <strong>bug tracking</strong>, and close collaboration with developers and QA teams.</p></li><li><p>Designed and executed <strong>test cases for web and backend systems</strong>, performing <strong>functional, regression, and API testing</strong> using tools like <strong>Postman</strong>.</p></li><li><p>Logged, tracked, and verified issues in <strong>Jira</strong>, validating bug fixes and maintaining release quality across versions.</p></li><li><p>Conducted <strong>data integrity validation</strong> using <strong>SQL queries</strong>, ensuring accurate reporting and consistent platform performance.</p></li></ul>",
-                            skills: [] 
-                        },
-                        { 
-                            id: 'gzk9zj7yt6t2bsfl30ffiw0d', 
-                            title: 'Customer Service Specialist', 
-                            company: 'We Are Leaderbet', 
-                            period: 'May 2023 - January 2025', 
-                            detailsHtml: "<p>Resolved up to 50 daily customer support tickets, efficiently handling a wide range of client issues in a high-pressure environment.</p><p>Skilled at multitasking across platforms including Jira, Zoho CRM, <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://LiveCaller.io\">LiveCaller.io</a>, Zoho People, and Slack for seamless internal communication.</p><p>Maintained clear, professional communication and detailed documentation using Microsoft Office tools to ensure top-tier customer service and team alignment.</p>",
-                            skills: [] 
-                        },
-                        { 
-                            id: 'mesyjs2w79cqjl0iy2g7kw38', 
-                            title: 'Help Desk Administrator', 
-                            company: 'Apex Global Solutions', 
-                            period: 'January 2022 - May 2023', 
-                            detailsHtml: "<p>Provided technical support to staff in a nursing facility as a Helpdesk Administrator</p><p>Managed and resolved support tickets using Zendesk</p><p>Assisted in troubleshooting day-to-day technical issues to ensure smooth operations</p><p>Facilitated internal communication through Slack</p><p>Utilized Microsoft Office tools for documentation and reporting</p><p>Demonstrated strong organizational skills, attention to detail, and a high level of</p><p>customer service</p>",
-                            skills: [] 
-                        },
-                        { 
-                            id: 'ns0fof6fws9r2g7j06j9izfw', 
-                            title: 'Customer Service Specialist', 
-                            company: 'Evolution', 
-                            period: 'January 2020 - January 2022', 
-                            detailsHtml: "<p>Delivered high-quality customer support for online live casino games, ensuring smooth</p><p>player experiences and timely issue resolution</p><p>Managed and tracked client concerns using Jira, maintaining an efficient and organized</p><p>ticket workflow</p><p>Used Microsoft Office tools to prepare reports, document client interactions, and</p><p>support team communication and coordination</p>",
-                            skills: [] 
-                        }
-                    ],
-                    skills: {
-                        core: [
-                            'Communication & Interpersonal Skills', 
-                            'Multitasking & Time Management', 
-                            'Team Collaboration & Adaptability', 
-                            'Organizational & Documentation Skills', 
-                            'iGaming Operations', 
-                            'Customer Support Optimization', 
-                            'Workflow Optimization'
-                        ],
-                        tools: [
-                            'Zendesk', 
-                            'Zoho', 
-                            'Monday', 
-                            'Confluence', 
-                            'Jira', 
-                            'Python', 
-                            'SQL', 
-                            'NoSQL', 
-                            'Git', 
-                            'GitHub', 
-                            'Amazon Web Services (AWS)', 
-                            'API Development', 
-                            'REST APIs', 
-                            'Slack', 
-                            'Microsoft Products'
-                        ]
-                    },
-                    achievementDetails: {
-                        'au20p518khllobpf90vwwpjp': { 
-                            title: 'Zendesk Automation & AI Integration', 
-                            body: "<p>Led the design and implementation of advanced <strong>Zendesk automation workflows</strong>, custom <strong>triggers</strong>, and <strong>AI-driven chat solutions</strong> to enhance ticket handling efficiency. Integrated AI-powered response systems and dynamic macros, resulting in a <strong>25% reduction in average response time</strong> and improved <strong>CSAT scores</strong> across customer channels.</p>" 
-                        },
-                        'qgxsdn5ulrhptrj0oovu3yno': { 
-                            title: 'iGaming QA Process Optimization', 
-                            body: "<p>Spearheaded quality assurance efforts for web-based iGaming platforms, executing <strong>manual, regression, and API testing</strong> via <strong>Postman</strong>. Collaborated closely with development teams to identify and resolve high-impact defects, using <strong>Jira</strong> for bug tracking and <strong>SQL</strong> for data verification. Achieved a <strong>notable increase in platform stability</strong> and reduced bug recurrence across releases.</p>" 
-                        },
-                        'dei2gmfhifrp0gycjirs942o': { 
-                            title: 'CRM Workflow Enhancement', 
-                            body: "<p>Developed and integrated new CRM features using <strong>Intercom</strong> and backend API connections to centralize player communication and automate feedback loops. Improved <strong>data visibility</strong> and <strong>response tracking</strong>, enabling the support team to handle inquiries <strong>30% faster</strong> while maintaining consistent service quality.</p>" 
-                        }
-                    }
-                },
-                ka: {
-                    jobTitle: 'მხარდაჭერისა და ავტომატიზაციის სპეციალისტი',
-                    navProfile: 'პროფილი', navExperience: 'გამოცდილება', navSkills: 'უნარები', navAchievements: 'პროექტები', navEducation: 'განათლება', navContact: 'კონტაქტი',
-                    navProfileMobile: 'პროფილი', navExperienceMobile: 'გამოცდილება', navSkillsMobile: 'უნარები', navAchievementsMobile: 'პროექტები', navEducationMobile: 'განათლება', navContactMobile: 'კონტაქტი',
-                    downloadCV: 'CV-ის გადმოწერა',
-                    downloadCVMobile: 'CV-ის გადმოწერა',
-                    profileTitle: 'პროფესიული პროფილი',
-                    profileText: 'გამოცდილი და საიმედო მომხმარებელთა მომსახურების პროფესიონალი, დამტკიცებული გამოცდილებით რთული სამომხმარებლო საკითხების გადაჭრაში, მხარდაჭერის პროცესების გამარტივებასა და საერთო კმაყოფილების გაუმჯობესებაში. ცნობილი, როგორც პროაქტიული გუნდის მოთამაშე, სწრაფად შემსწავლელი და დეტალებზე ორიენტირებული კომუნიკატორი, პლატფორმებისა და ინსტრუმენტების ფართო სპექტრზე მუშაობის პრაქტიკული გამოცდილებით. მზად არის მნიშვნელოვანი წვლილი შეიტანოს ნებისმიერ მომხმარებელზე ორიენტირებულ გუნდურ გარემოში.',
-                    experienceTitle: 'კარიერული ქრონოლოგია',
-                    experienceDescription: 'ეს ქრონოლოგია ასახავს ჩემს კარიერულ წინსვლას. დააჭირეთ ნებისმიერ პოზიციას, რათა იხილოთ დეტალური პასუხისმგებლობები და მიღწევები.',
-                    skillsTitle: 'უნარები',
-                    skillsDescription: 'ეს არის ჩემი ძირითადი უნარების ინტერაქტიული სია. დააჭირეთ ნებისმიერ უნარს, რათა გაიგოთ მეტი, თუ სად და როგორ გამოვიყენე ის ჩემს პროფესიულ როლებში.',
-                    coreSkillsTitle: 'ძირითადი კომპეტენციები',
-                    toolsSkillsTitle: 'ინსტრუმენტები და პლატფორმები',
-                    achievementsTitle: 'ძირითადი პროექტები და მიღწევები',
-                    achievementsDescription: 'აქ მოცემულია ჩემი კარიერის რამდენიმე მნიშვნელოვანი პროექტი. დააჭირეთ ნებისმიერ ბარათს, რათა გაიგოთ მეტი ამ მიღწევების კონტექსტისა და გავლენის შესახებ.',
-                    educationTitle: 'განათლება და ენები',
-                    educationSubTitle: 'განათლება',
-                    degree: 'კომპიუტერულ მეცნიერებათა ბაკალავრი',
-                    university: 'საქართველოს ტექნიკური უნივერსიტეტი',
-                    gradDate: 'სექტემბერი 2021 - მაისი 2025',
-                    languagesSubTitle: 'ენები',
-                    langGeo: 'ქართული:', langGeoLevel: 'მშობლიური',
-                    langEng: 'ინგლისური:', langEngLevel: 'C1',
-                    langRus: 'რუსული:', langRusLevel: 'დამწყები',
-                    contactTitle: 'დამიკავშირდით',
-                    location: 'მდებარეობა:',
-                    skillModalTitle: 'უნარი: ',
-                    skillModalBody: "ეს უნარი გამოვიყენე და დავხვეწე შემდეგ კომპანიებში მუშაობისას: ",
-                    skillModalBodyDefault: "ეს არის ფუნდამენტური უნარი, რომელიც განვავითარე და გამოვიყენე სხვადასხვა პროფესიულ კონტექსტში.",
-                    
-                    // --- DYNAMIC DATA (KA) ---
-                    experienceData: [
-                        { 
-                            id: 'kee5ul47y079tf9is0skenyu', 
-                            title: 'Zendesk ავტომატიზაციისა და AI უფროსი სპეციალისტი', 
-                            company: 'VirtusPro LLC', 
-                            period: 'ოქტომბერი 2025 - დღემდე', 
-                            detailsHtml: "<p>Zendesk-ის ავტომატიზაციების, ტრიგერებისა და მაკროების შემუშავება, კონფიგურაცია და შენარჩუნება მხარდაჭერის ოპერაციების გასამარტივებლად.</p><p>AI-ზე მომუშავე ინსტრუმენტებისა და მესამე მხარის სისტემების ინტეგრირება მომხმარებელთა გამოცდილების გასაუმჯობესებლად და ხელით შრომის შესამცირებლად.</p><p>Monday.com-თან (SRM) მუშაობა პროექტების თვალყურის დევნების, ამოცანების კოორდინაციისა და დეპარტამენტთაშორისი თანამშრომლობისთვის.</p><p>მომხმარებელთა მოთხოვნების მონიტორინგი და ანალიზი ტენდენციების გამოსავლენად, ბილეთების მარშრუტიზაციის გასაუმჯობესებლად და მხარდაჭერის ეფექტურობის ასამაღლებლად.</p><p>ვებსაიტის ბექენდის მუშაობის ზედამხედველობა და შენარჩუნება, მონაცემთა მთლიანობისა და CRM სისტემებთან შეუფერხებელი ინტეგრაციის უზრუნველყოფა.</p><p>ოპერაციული ეფექტურობისა და მომხმარებლის გამოცდილების გასაუმჯობესებლად ახალი ინსტრუმენტებისა და სამუშაო პროცესების მუდმივი კვლევა და დანერგვა.</p>",
-                            skills: []
-                        },
-                        { 
-                            id: 'qc6dpbwwh6xos4g23hoz741s', 
-                            title: 'ხარისხის უზრუნველყოფისა და CRM სპეციალისტი | iGaming ოპერაციები', 
-                            company: 'N1 Partners Group', 
-                            period: 'იანვარი 2025 - ოქტომბერი 2025', 
-                            detailsHtml: "<ul><li><p>კოსტა რიკის არალიცენზირებული ონლაინ კაზინოების ჯგუფის <strong>მომხმარებელთა მხარდაჭერის გუნდის</strong> ზედამხედველობა და მხარდაჭერა, ყოველდღიური ოპერაციების გამართულად წარმართვისა და მომსახურების თანმიმდევრული ხარისხის უზრუნველყოფა.</p></li><li><p>მოთამაშეთა რთული საკითხების <strong>ესკალაციის მხარდაჭერის</strong> უზრუნველყოფა, კომპანიის პოლიტიკის შესაბამისად დროული და მაღალი დონის გადაწყვეტილებების მიღება.</p></li><li><p><strong>CRM სისტემების (Intercom, Zendesk)</strong> გამოყენება კომუნიკაციის სამუშაო პროცესების გასამარტივებლად, რეაგირების დროის შესამცირებლად და მომხმარებელთა კმაყოფილების მაჩვენებლების გასაუმჯობესებლად.</p></li><li><p><strong>Confluence</strong>-ში <strong>შიდა დოკუმენტაციის</strong> შენარჩუნება და განახლება, ცოდნის გაზიარებისა და მხარდაჭერის სტანდარტიზებული პროცედურების ხელშეწყობა.</p></li><li><p><strong>მხარდაჭერასა და ინჟინერიას</strong> შორის კომუნიკაციის დასამყარებლად დეველოპერებისა და პროდუქტის გუნდებთან თანამშრომლობა, საკითხების ზუსტი მოხსენებისა და სწრაფი გადაწყვეტილებების უზრუნველყოფა.</p></li><li><p>iGaming პროგრამული უზრუნველყოფის <strong>ხარისხისა და სტაბილურობის</strong> უზრუნველყოფა <strong>ხელით და ავტომატური ტესტირების</strong>, <strong>ხარვეზების აღრიცხვისა</strong> და QA გუნდებთან მჭიდრო თანამშრომლობით.</p></li><li><p><strong>ვებ და ბექენდ სისტემებისთვის სატესტო შემთხვევების</strong> შემუშავება და შესრულება, <strong>ფუნქციონალური, რეგრესიული და API ტესტირების</strong> ჩატარება <strong>Postman</strong>-ის მსგავსი ინსტრუმენტებით.</p></li><li><p><strong>Jira</strong>-ში პრობლემების აღრიცხვა, თვალყურის დევნება და დამოწმება, ხარვეზების გამოსწორების ვალიდაცია და რელიზის ხარისხის შენარჩუნება.</p></li><li><p><strong>მონაცემთა მთლიანობის ვალიდაციის</strong> ჩატარება <strong>SQL მოთხოვნების</strong> გამოყენებით, ზუსტი ანგარიშგებისა და პლატფორმის თანმიმდევრული მუშაობის უზრუნველყოფა.</p></li></ul>",
-                            skills: [] 
-                        },
-                        { 
-                            id: 'gzk9zj7yt6t2bsfl30ffiw0d', 
-                            title: 'მომხმარებელთა მომსახურების სპეციალისტი', 
-                            company: 'We Are Leaderbet', 
-                            period: 'მაისი 2023 - იანვარი 2025', 
-                            detailsHtml: "<p>დღეში 50-მდე მომხმარებელთა მხარდაჭერის ბილეთის გადაჭრა, კლიენტთა საკითხების ფართო სპექტრის ეფექტურად მართვა მაღალი წნეხის გარემოში.</p><p>შიდა კომუნიკაციისთვის სხვადასხვა პლატფორმაზე მუშაობის უნარი, მათ შორის Jira, Zoho CRM, LiveCaller.io, Zoho People და Slack.</p><p>მკაფიო, პროფესიონალური კომუნიკაციისა და დეტალური დოკუმენტაციის შენარჩუნება Microsoft Office-ის ინსტრუმენტების გამოყენებით უმაღლესი დონის მომსახურებისა და გუნდის კოორდინაციის უზრუნველსაყოფად.</p>",
-                            skills: [] 
-                        },
-                        { 
-                            id: 'mesyjs2w79cqjl0iy2g7kw38', 
-                            title: 'Help Desk ადმინისტრატორი', 
-                            company: 'Apex Global Solutions', 
-                            period: 'იანვარი 2022 - მაისი 2023', 
-                            detailsHtml: "<p>ტექნიკური დახმარების გაწევა საექთნო დაწესებულების თანამშრომლებისთვის, როგორც Helpdesk ადმინისტრატორი.</p><p>მხარდაჭერის ბილეთების მართვა და გადაჭრა Zendesk-ის გამოყენებით.</p<p>ყოველდღიური ტექნიკური პრობლემების მოგვარებაში დახმარება შეუფერხებელი მუშაობის უზრუნველსაყოფად.</p><p>შიდა კომუნიკაციის ხელშეწყობა Slack-ის საშუალებით.</p><p>Microsoft Office-ის ინსტრუმენტების გამოყენება დოკუმენტაციისა და ანგარიშგებისთვის.</p><p>ძლიერი ორგანიზაციული უნარების, დეტალებზე ორიენტირებულობისა და მომხმარებელთა მომსახურების მაღალი დონის დემონსტრირება.</p>",
-                            skills: [] 
-                        },
-                        { 
-                            id: 'ns0fof6fws9r2g7j06j9izfw', 
-                            title: 'მომხმარებელთა მომსახურების სპეციალისტი', 
-                            company: 'Evolution', 
-                            period: 'იანვარი 2020 - იანვარი 2022', 
-                            detailsHtml: "<p>მაღალი ხარისხის მომხმარებელთა მხარდაჭერის მიწოდება ონლაინ ლაივ კაზინოს თამაშებისთვის, მოთამაშეთა შეუფერხებელი გამოცდილებისა და პრობლემების დროული გადაჭრის უზრუნველყოფა.</p><p>კლიენტთა საკითხების მართვა და თვალყურის დევნება Jira-ს გამოყენებით, ბილეთების ეფექტური და ორგანიზებული სამუშაო პროცესის შენარჩუნება.</p><p>Microsoft Office-ის ინსტრუმენტების გამოყენება ანგარიშების მოსამზადებლად, კლიენტებთან ურთიერთობის დოკუმენტირებისა და გუნდური კომუნიკაციის მხარდასაჭერად.</p>",
-                            skills: [] 
-                        }
-                    ],
-                    skills: {
-                        core: [
-                            'კომუნიკაციისა და ინტერპერსონალური უნარები',
-                            'მრავალფუნქციურობა და დროის მართვა',
-                            'გუნდური თანამშრომლობა და ადაპტაცია',
-                            'ორგანიზაციული და დოკუმენტაციის უნარები',
-                            'iGaming ოპერაციები',
-                            'მომხმარებელთა მხარდაჭერის ოპტიმიზაცია',
-                            'სამუშაო პროცესის ოპტიმიზაცია'
-                        ],
-                        tools: [
-                            'Zendesk',
-                            'Zoho',
-                            'Monday',
-                            'Confluence',
-                            'Jira',
-                            'Python',
-                            'SQL',
-                            'NoSQL',
-                            'Git',
-                            'GitHub',
-                            'Amazon Web Services (AWS)',
-                            'API Development',
-                            'REST APIs',
-                            'Slack',
-                            'Microsoft-ის პროდუქტები'
-                        ]
-                    },
-                    achievementDetails: {
-                        'au20p518khllobpf90vwwpjp': { 
-                            title: 'Zendesk ავტომატიზაცია და AI ინტეგრაცია', 
-                            body: "<p>ხელმძღვანელობდა <strong>Zendesk-ის ავტომატიზაციის</strong> მოწინავე სამუშაო პროცესების, მორგებული <strong>ტრიგერების</strong> და <strong>AI-ზე დაფუძნებული ჩატის გადაწყვეტილებების</strong> დიზაინსა და დანერგვას ბილეთების დამუშავების ეფექტურობის ასამაღლებლად. ინტეგრირებული იყო AI-ზე მომუშავე საპასუხო სისტემები და დინამიური მაკროები, რამაც გამოიწვია <strong>საშუალო რეაგირების დროის 25%-ით შემცირება</strong> და გაუმჯობესებული <strong>CSAT ქულები</strong> მომხმარებელთა არხებში.</p>" 
-                        },
-                        'qgxsdn5ulrhptrj0oovu3yno': { 
-                            title: 'iGaming QA პროცესის ოპტიმიზაცია', 
-                            body: "<p>ხელმძღვანელობდა ხარისხის უზრუნველყოფის სამუშაოებს ვებ-ზე დაფუძნებული iGaming პლატფორმებისთვის, <strong>ხელით, რეგრესიული და API ტესტირების</strong> შესრულებით <strong>Postman</strong>-ის საშუალებით. მჭიდროდ თანამშრომლობდა დეველოპერების გუნდებთან მაღალი გავლენის მქონე დეფექტების იდენტიფიცირებისა და გადაჭრის მიზნით, <strong>Jira</strong>-ს გამოყენებით ხარვეზების აღრიცხვისთვის და <strong>SQL</strong>-ის მონაცემთა ვერიფიკაციისთვის. მიაღწია <strong>პლატფორმის სტაბილურობის თვალსაჩინო ზრდას</strong> და შეამცირა ხარვეზების განმეორება რელიზებში.</p>" 
-                        },
-                        'dei2gmfhifrp0gycjirs942o': { 
-                            title: 'CRM სამუშაო პროცესის გაუმჯობესება', 
-                            body: "<p>შეიმუშავა და მოახდინა CRM-ის ახალი ფუნქციების ინტეგრირება <strong>Intercom</strong>-ისა და ბექენდ API კავშირების გამოყენებით, მოთამაშეთა კომუნიკაციის ცენტრალიზაციისა და უკუკავშირის მარყუჟების ავტომატიზაციისთვის. გააუმჯობესა <strong>მონაცემთა ხილვადობა</strong> და <strong>რეაგირების თვალყურის დევნება</strong>, რამაც საშუალება მისცა მხარდაჭერის გუნდს <strong>30%-ით უფრო სწრაფად</strong> დაემუშავებინა მოთხოვნები მომსახურების თანმიმდევრული ხარისხის შენარჩუნებით.</p>" 
-                        }
-                    }
-                }
-            };
-            
-            // --- Auto-populate skills in experienceData ---
-            ['en', 'ka'].forEach(lang => {
-                const allSkills = [...translations[lang].skills.core, ...translations[lang].skills.tools];
-                translations[lang].experienceData.forEach(job => {
-                    const textToSearch = parseHtmlDetails(job.detailsHtml).join(' ');
-                    job.skills = findSkillsInText(textToSearch, allSkills);
-                });
-            });
-
-
-            // --- Modal Logic ---
-            const modal = document.getElementById('modal');
-            const modalContent = document.getElementById('modal-content');
-            const modalClose = document.getElementById('modal-close');
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-
-            const openModal = (title, body) => {
-                modalTitle.textContent = title;
-                modalBody.innerHTML = body;
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                setTimeout(() => modalContent.classList.remove('scale-95', 'opacity-0'), 10);
-            };
-
-            const closeModal = () => {
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 200);
-            };
-            
-            modalClose.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
-            });
-
-            // --- Dynamic Content Builders ---
-
-            function buildTimeline(lang) {
-                const timelineNav = document.getElementById('timeline-nav');
-                const experienceDetailsContainer = document.getElementById('experience-details');
-                const experience = translations[lang].experienceData;
-                
-                timelineNav.innerHTML = '';
-                experienceDetailsContainer.innerHTML = '';
-
-                experience.forEach((job) => {
-                    const timelineItem = document.createElement('div');
-                    timelineItem.className = 'timeline-item mb-8 relative cursor-pointer';
-                    timelineItem.dataset.id = job.id;
-                    timelineItem.innerHTML = `<div class="timeline-dot absolute -left-[3.2rem] top-1 w-6 h-6 bg-white border-4 border-teal-500 rounded-full transition-all"></div><h4 class="font-bold text-slate-800">${job.title}</h4><p class="text-sm text-slate-600">${job.company}</p><p class="text-xs text-slate-500">${job.period}</p>`;
-                    timelineNav.appendChild(timelineItem);
-
-                    const detailItem = document.createElement('div');
-                    detailItem.id = `detail-${job.id}`;
-                    detailItem.className = 'bg-white p-6 rounded-xl shadow-sm mb-6 transition-all duration-300';
-                    detailItem.dataset.skills = job.skills.join(',');
-                    
-                    const detailsList = parseHtmlDetails(job.detailsHtml)
-                        .map(d => `<li>${d}</li>`).join('');
-
-                    detailItem.innerHTML = `
-                        <h3 class="text-2xl font-bold text-slate-800">${job.title}</h3>
-                        <p class="text-md font-medium text-teal-700 mb-4">${job.company} | ${job.period}</p>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-600">${detailsList}</ul>`;
-                    experienceDetailsContainer.appendChild(detailItem);
-                });
-                
-                const timelineItems = document.querySelectorAll('.timeline-item');
-                timelineItems.forEach(item => {
-                    item.addEventListener('click', () => {
-                        const targetId = `detail-${item.dataset.id}`;
-                        const targetElement = document.getElementById(targetId);
-                        
-                        // Scroll to target
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        
-                        // Update active states
-                        timelineItems.forEach(i => i.classList.remove('active'));
-                        item.classList.add('active');
-                        
-                        document.querySelectorAll('#experience-details > div').forEach(d => d.classList.remove('timeline-item-active'));
-                        targetElement.classList.add('timeline-item-active');
-                    });
-                });
-                if (timelineItems.length > 0) timelineItems[0].click();
-            }
-
-            function buildSkills(lang) {
-                const skillsData = translations[lang].skills;
-                
-                const createSkillPills = (containerId, skillList) => {
-                    const container = document.getElementById(containerId);
-                    container.innerHTML = '';
-                    skillList.forEach(skill => {
-                        const pill = document.createElement('button');
-                        pill.className = 'skill-pill bg-teal-100 text-teal-800 text-sm font-medium px-3 py-1 rounded-full transition-all duration-200 hover:bg-teal-200 hover:scale-105';
-                        pill.textContent = skill;
-                        pill.dataset.skill = skill;
-                        container.appendChild(pill);
-                    });
-                }
-
-                createSkillPills('core-skills-container', skillsData.core);
-                createSkillPills('tool-skills-container', skillsData.tools);
-                setupSkillClicks(lang);
-            }
-
-            function setupSkillClicks(lang) {
-                 document.querySelectorAll('.skill-pill').forEach(pill => {
-                    pill.addEventListener('click', () => {
-                        const skillName = pill.dataset.skill;
-                        
-                        // Find the English version of the skill to map to experienceData
-                        let enSkillName = skillName;
-                        if (lang === 'ka') {
-                            const coreIndex = translations.ka.skills.core.indexOf(skillName);
-                            if (coreIndex > -1) {
-                                enSkillName = translations.en.skills.core[coreIndex];
-                            } else {
-                                const toolIndex = translations.ka.skills.tools.indexOf(skillName);
-                                if (toolIndex > -1) {
-                                    enSkillName = translations.en.skills.tools[toolIndex];
-                                }
-                            }
-                        }
-
-                        const jobsWithSkill = translations[lang].experienceData
-                            .filter(job => {
-                                // Find the English version of the job's skills for comparison
-                                const enJob = translations.en.experienceData.find(j => j.id === job.id);
-                                return enJob && enJob.skills.includes(enSkillName);
-                            })
-                            .map(job => `<strong>${job.title}</strong> at ${job.company}`);
-
-                        let modalBodyContent = '';
-                        if (jobsWithSkill.length > 0) {
-                            modalBodyContent = `${translations[lang].skillModalBody}<ul class="list-disc pl-5 mt-2">${jobsWithSkill.map(job => `<li>${job}</li>`).join('')}</ul>`;
-                        } else {
-                            modalBodyContent = translations[lang].skillModalBodyDefault;
-                        }
-                        
-                        openModal(translations[lang].skillModalTitle + skillName, modalBodyContent);
-                    });
-                });
-            }
-
-            function buildAchievements(lang) {
-                const container = document.getElementById('achievements-container');
-                if (!container) return;
-                container.innerHTML = '';
-                const achievementData = translations[lang].achievementDetails;
-                const achievementKeys = Object.keys(achievementData);
-
-                for (const key of achievementKeys) {
-                    const achievement = achievementData[key];
-                    // Extract a short description, strip HTML
-                    const tempEl = document.createElement('div');
-                    tempEl.innerHTML = achievement.body;
-                    const shortDesc = (tempEl.textContent || tempEl.innerText || "").substring(0, 120) + '...';
-
-                    const cardHtml = `
-                    <div class="achievement-card bg-white p-6 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer" data-achievement-id="${key}">
-                        <h3 class="text-xl font-bold text-teal-600 mb-2">${achievement.title}</h3>
-                        <p class="text-sm text-slate-600">${shortDesc}</p>
-                    </div>`;
-                    container.innerHTML += cardHtml;
-                }
-            }
-
-            function setupAchievementClicks(lang) {
-                document.querySelectorAll('.achievement-card').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const achievementId = card.dataset.achievementId;
-                        const details = translations[lang].achievementDetails[achievementId];
-                        if (details) {
-                            openModal(details.title, details.body);
-                        }
-                    });
-                });
-            }
-
-            // --- Language Switcher ---
-            
-            function updateLanguage(lang) {
-                document.body.className = `bg-stone-50 text-slate-700 lang-${lang}`;
-                currentLang = lang;
-                const content = translations[lang];
-
-                document.querySelectorAll('[data-lang-key]').forEach(el => {
-                    const key = el.dataset.langKey;
-                    if (content[key]) {
-                        el.textContent = content[key];
-                    }
-                });
-                
-                // Update lang toggle button text
-                const langBtnText = (lang === 'en') ? 'KA' : 'EN';
-                document.getElementById('lang-toggle').textContent = langBtnText;
-                document.getElementById('lang-toggle-mobile').textContent = langBtnText;
-                
-                // Re-render dynamic content
-                buildTimeline(lang);
-                buildSkills(lang);
-                buildAchievements(lang);
-                setupAchievementClicks(lang); // Re-bind clicks for new elements
-            }
-
-            [document.getElementById('lang-toggle'), document.getElementById('lang-toggle-mobile')].forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const newLang = (currentLang === 'en') ? 'ka' : 'en';
-                    updateLanguage(newLang);
-                });
-            });
-            
-            // --- Mobile Menu ---
-            const menuBtn = document.getElementById('menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            menuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-            mobileMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
-            });
-
-            // --- Fade-in Sections ---
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { rootMargin: '0px', threshold: 0.1 });
-
-            document.querySelectorAll('.fade-in-section').forEach(section => {
-                observer.observe(section);
-            });
-            
-            // --- PDF Download (Simplified) ---
-            // Note: This is a very basic text-only PDF generation.
-            function generatePDF() {
-                const doc = new jsPDF();
-                const lang = currentLang;
-                const data = translations[lang];
-                let y = 20;
-
-                doc.setFont('Inter', 'bold');
-                doc.setFontSize(20);
-                doc.text('Luka Lashkhi', 10, y);
-                y += 8;
-                doc.setFont('Inter', 'normal');
-                doc.setFontSize(12);
-                doc.text(data.jobTitle, 10, y);
-                y += 6;
-                doc.setTextColor(0, 102, 102); // Teal
-                doc.textWithLink('l.lashkhi98@gmail.com', 10, y, { url: 'mailto:l.lashkhi98@gmail.com' });
-                doc.text('+995 593 541731', 60, y);
-                y += 10;
-
-                doc.setTextColor(0, 0, 0);
-                doc.setFont('Inter', 'bold');
-                doc.setFontSize(16);
-                doc.text(data.profileTitle, 10, y);
-                y += 8;
-                doc.setFont('Inter', 'normal');
-                doc.setFontSize(10);
-                doc.text(doc.splitTextToSize(data.profileText, 180), 10, y);
-                y += 30;
-
-                doc.setFont('Inter', 'bold');
-                doc.setFontSize(16);
-                doc.text(data.experienceTitle, 10, y);
-                y += 8;
-                
-                data.experienceData.forEach(job => {
-                    if (y > 260) { doc.addPage(); y = 20; } // New page
-                    doc.setFont('Inter', 'bold');
-                    doc.setFontSize(12);
-                    doc.text(job.title, 10, y);
-                    y += 6;
-                    doc.setFont('Inter', 'normal');
-                    doc.setFontSize(10);
-                    doc.text(`${job.company} | ${job.period}`, 10, y);
-                    y += 6;
-                    const details = parseHtmlDetails(job.detailsHtml);
-                    details.forEach(detail => {
-                        doc.text(`• ${doc.splitTextToSize(detail, 170)}`, 15, y);
-                        y += 5;
-                    });
-                    y += 4;
-                });
-
-                // ... (Add Skills, Education etc. in a similar fashion)
-                
-                doc.save('CV-Luka_Lashkhi.pdf');
-            }
-            
-            document.getElementById('download-btn').addEventListener('click', generatePDF);
-            document.getElementById('download-btn-mobile').addEventListener('click', generatePDF);
-
-
-            // --- Initial Page Load ---
-            updateLanguage('en'); // Load English by default
-
+    // Populate skills in experienceData
+    ['en','ka'].forEach(lang => {
+        const all = [...translations[lang].skills.core, ...translations[lang].skills.tools];
+        translations[lang].experienceData.forEach(job => {
+            job.skills = findSkillsInText(parseHtmlDetails(job.detailsHtml).join(' '), all);
         });
-    </script>
+    });
+
+    // ===================== MODAL =====================
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const modalClose = document.getElementById('modal-close');
+
+    function openModal(title, body) {
+        modalTitle.textContent = title;
+        modalBody.innerHTML = body;
+        modal.classList.add('open');
+    }
+    function closeModal() { modal.classList.remove('open'); }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+    // ===================== TIMELINE =====================
+    function buildTimeline(lang) {
+        const navEl = document.getElementById('timeline-nav');
+        const detailEl = document.getElementById('experience-details');
+        const data = translations[lang].experienceData;
+
+        navEl.innerHTML = '';
+        detailEl.innerHTML = '';
+
+        data.forEach((job, idx) => {
+            // Nav item
+            const nav = document.createElement('div');
+            nav.className = 'timeline-nav-item reveal';
+            nav.style.transitionDelay = (idx * 0.08) + 's';
+            nav.dataset.id = job.id;
+            nav.innerHTML = `<h4>${job.title}</h4><p>${job.company}</p><div class="period">${job.period}</div>`;
+            navEl.appendChild(nav);
+
+            // Detail panel
+            const detail = document.createElement('div');
+            detail.className = 'exp-detail';
+            detail.id = 'exp-detail-' + job.id;
+            const items = parseHtmlDetails(job.detailsHtml).map(d => `<li>${d}</li>`).join('');
+            detail.innerHTML = `<h3>${job.title}</h3><div class="meta">${job.company} &nbsp;·&nbsp; ${job.period}</div><ul>${items}</ul>`;
+            detailEl.appendChild(detail);
+
+            nav.addEventListener('click', () => {
+                document.querySelectorAll('.timeline-nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelectorAll('.exp-detail').forEach(d => d.classList.remove('active'));
+                nav.classList.add('active');
+                detail.classList.add('active');
+            });
+        });
+
+        // Activate first
+        const first = navEl.querySelector('.timeline-nav-item');
+        if (first) first.click();
+    }
+
+    // ===================== SKILLS =====================
+    function buildSkills(lang) {
+        const data = translations[lang].skills;
+        function makePills(containerId, list) {
+            const c = document.getElementById(containerId);
+            c.innerHTML = '';
+            list.forEach(skill => {
+                const p = document.createElement('button');
+                p.className = 'skill-pill';
+                p.textContent = skill;
+                p.dataset.skill = skill;
+                c.appendChild(p);
+            });
+        }
+        makePills('core-skills-container', data.core);
+        makePills('tool-skills-container', data.tools);
+
+        document.querySelectorAll('.skill-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                const skillName = pill.dataset.skill;
+                let enSkillName = skillName;
+                if (lang === 'ka') {
+                    const ci = translations.ka.skills.core.indexOf(skillName);
+                    if (ci > -1) enSkillName = translations.en.skills.core[ci];
+                    else {
+                        const ti = translations.ka.skills.tools.indexOf(skillName);
+                        if (ti > -1) enSkillName = translations.en.skills.tools[ti];
+                    }
+                }
+                const jobs = translations[lang].experienceData
+                    .filter(job => { const enJob = translations.en.experienceData.find(j => j.id === job.id); return enJob && enJob.skills.includes(enSkillName); })
+                    .map(job => `<li><strong>${job.title}</strong> — ${job.company}</li>`);
+                const body = jobs.length > 0
+                    ? `<p>${translations[lang].skillModalBody}</p><ul style="margin-top:12px">${jobs.join('')}</ul>`
+                    : translations[lang].skillModalBodyDefault;
+                openModal(translations[lang].skillModalTitle + skillName, body);
+            });
+        });
+    }
+
+    // ===================== ACHIEVEMENTS =====================
+    function buildAchievements(lang) {
+        const c = document.getElementById('achievements-container');
+        if (!c) return;
+        c.innerHTML = '';
+        const data = translations[lang].achievementDetails;
+        const nums = ['01','02','03'];
+        Object.keys(data).forEach((key, i) => {
+            const a = data[key];
+            const tmp = document.createElement('div');
+            tmp.innerHTML = a.body;
+            const short = (tmp.textContent || '').substring(0, 110) + '…';
+            const card = document.createElement('div');
+            card.className = 'achievement-card reveal';
+            card.style.transitionDelay = (i * 0.1) + 's';
+            card.dataset.id = key;
+            card.innerHTML = `<div class="num">${nums[i]||'0'+(i+1)}</div><h3>${a.title}</h3><p>${short}</p>`;
+            card.addEventListener('click', () => openModal(a.title, a.body));
+            c.appendChild(card);
+        });
+    }
+
+    // ===================== LANGUAGE =====================
+    function updateLanguage(lang) {
+        document.body.className = `lang-${lang}`;
+        currentLang = lang;
+        const t = translations[lang];
+        document.querySelectorAll('[data-lang-key]').forEach(el => {
+            const k = el.dataset.langKey;
+            if (t[k] !== undefined) el.textContent = t[k];
+        });
+        const next = lang === 'en' ? 'KA' : 'EN';
+        document.getElementById('lang-toggle').textContent = next;
+        document.getElementById('lang-toggle-mobile').textContent = next;
+        buildTimeline(lang);
+        buildSkills(lang);
+        buildAchievements(lang);
+        observeReveal();
+    }
+
+    [document.getElementById('lang-toggle'), document.getElementById('lang-toggle-mobile')].forEach(btn => {
+        btn.addEventListener('click', () => updateLanguage(currentLang === 'en' ? 'ka' : 'en'));
+    });
+
+    // ===================== MOBILE MENU =====================
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => mobileMenu.style.display = mobileMenu.style.display === 'none' ? 'block' : 'none');
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.style.display = 'none'));
+
+    // ===================== REVEAL =====================
+    function observeReveal() {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.reveal').forEach(el => { el.classList.remove('visible'); observer.observe(el); });
+    }
+
+    // ===================== PDF =====================
+    function generatePDF() {
+        const doc = new jsPDF();
+        const d = translations[currentLang];
+        let y = 20;
+        doc.setFontSize(22); doc.setFont(undefined,'bold');
+        doc.text('Luka Lashkhi', 10, y); y += 8;
+        doc.setFontSize(11); doc.setFont(undefined,'normal');
+        doc.text(d.jobTitle, 10, y); y += 6;
+        doc.setTextColor(5, 184, 148);
+        doc.text('l.lashkhi98@gmail.com  |  +995 593 541731  |  Tbilisi, Georgia', 10, y); y += 12;
+        doc.setTextColor(0,0,0);
+        doc.setFont(undefined,'bold'); doc.setFontSize(14);
+        doc.text(d.profileTitle, 10, y); y += 7;
+        doc.setFont(undefined,'normal'); doc.setFontSize(10);
+        doc.text(doc.splitTextToSize(d.profileText, 185), 10, y); y += 28;
+        doc.setFont(undefined,'bold'); doc.setFontSize(14);
+        doc.text(d.experienceTitle, 10, y); y += 8;
+        d.experienceData.forEach(job => {
+            if (y > 255) { doc.addPage(); y = 20; }
+            doc.setFont(undefined,'bold'); doc.setFontSize(11);
+            doc.text(job.title, 10, y); y += 5;
+            doc.setFont(undefined,'normal'); doc.setFontSize(10);
+            doc.text(`${job.company}  |  ${job.period}`, 10, y); y += 5;
+            parseHtmlDetails(job.detailsHtml).forEach(det => {
+                const lines = doc.splitTextToSize(`• ${det}`, 175);
+                doc.text(lines, 14, y); y += lines.length * 5;
+            });
+            y += 4;
+        });
+        doc.save('CV-Luka_Lashkhi.pdf');
+    }
+    document.getElementById('download-btn').addEventListener('click', generatePDF);
+    document.getElementById('download-btn-mobile').addEventListener('click', generatePDF);
+
+    // ===================== INIT =====================
+    updateLanguage('en');
+});
+</script>
 </body>
 </html>
